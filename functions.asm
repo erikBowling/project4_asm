@@ -4,9 +4,8 @@
 
 BITS 32
 
-GLOBAL is_palindrome_asm
-GLOBAL add_str
-EXTERN atoi
+GLOBAL is_palindrome_asm, add_str, factstr
+EXTERN atoi, fact
 
 SECTION .text
 
@@ -91,4 +90,18 @@ add_str:
     mov esp, ebp
     pop ebp
 
+    ret
+
+factstr:
+    push ebp
+    mov ebp, esp
+
+    push DWORD [ebp+8]
+    call atoi
+
+    push eax
+    call fact
+
+    mov esp, ebp
+    pop ebp
     ret
