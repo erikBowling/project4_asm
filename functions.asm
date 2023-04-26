@@ -4,15 +4,28 @@
 
 BITS 32
 
-GLOBAL is_palindrome_asm, add_str, factstr
-EXTERN atoi, fact
+GLOBAL is_palindrome_asm, add_str, factstr, palindrome_check
+EXTERN atoi, fact, is_palindrome_c
+
+SECTION .data
+    prompt db "Please enter a string", 0xa
+    lenPrompt EQU $ - prompt
+
+    succ db "The string IS a palindrome", 0xa
+    lenSucc EQU $ - succ
+
+    failure db "The string IS NOT a palindrome", 0xa
+    lenFailure EQU $ - failure
+
+SECTION .bss
+    user_string resb 1024
 
 SECTION .text
 
 is_palindrome_asm:
     push ebp ; Preserve location of ebp
     mov ebp, esp ; Make ebp point to top of the stack
-    push esi
+    push esi 
     push ebx
 
     mov esi, [ebp+8]
@@ -67,7 +80,7 @@ is_palindrome_asm:
     ret
 
 
-; Expects two char* inputs. Should be at ebp+8 and ebp+12
+
 add_str:
     push ebp ; Preserve location of ebp
     mov ebp, esp ; Make ebp point to top of the stack
@@ -102,6 +115,56 @@ factstr:
     push eax
     call fact
 
+    mov esp, ebp
+    pop ebp
+    ret
+
+palindrome_check:
+    push ebp
+    mov ebp, esp
+    push ebx
+
+    ; Print the prompt
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt
+    mov edx, lenPrompt
+    int 80h
+
+    ; Take in user string
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, user_string
+    mov edx, 1024
+    int 80h
+
+    push user_string
+    call is_palindrome_c
+
+    add esp, 4 ; remove the pushed userstring
+
+    cmp eax, 1
+    je _success
+    jne _fail
+
+    _success:
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, succ
+        mov edx, lenSucc
+        int 80h
+        jmp _fin
+
+    _fail:
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, failure
+        mov edx, lenFailure
+        int 80h
+
+    _fin:
+
+    pop ebx
     mov esp, ebp
     pop ebp
     ret

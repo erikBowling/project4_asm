@@ -5,21 +5,16 @@
 int add_str(char *a, char *b); // Works
 int is_palindrome_asm(char *s); // Works
 int factstr(char* s);
+void palindrome_check();
 
 // C Functions
 
 int fact(int n);
+int is_palindrome_c(char* s);
 
 int main(){
 
-    char userinput[5];
-
-    printf("Please enter an integer: ");
-    scanf("%s", userinput);
-    
-    int result = factstr(userinput);
-    printf("%d", result);
-
+    palindrome_check();
 
     return 0;
 }
@@ -42,4 +37,23 @@ int fact(int n){
 
     return result;
 
+}
+
+int is_palindrome_c(char* s){
+    int len = 0;
+    int i, j;
+
+    while(s[len] != '\0')
+        len++;
+        
+    i = 0;
+    j = len - 2;
+
+    while(i < len / 2){
+        if(s[i] != s[j]) return 0;
+        i++;
+        j--;
+    }
+
+    return 1;
 }
