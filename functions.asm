@@ -18,7 +18,7 @@ SECTION .data
     lenFailure EQU $ - failure
 
 SECTION .bss
-    user_string resb 1024
+    user_string resb 1024 ; Used in check palindrome
 
 SECTION .text
 
@@ -79,8 +79,6 @@ is_palindrome_asm:
 
     ret
 
-
-
 add_str:
     push ebp ; Preserve location of ebp
     mov ebp, esp ; Make ebp point to top of the stack
@@ -124,6 +122,16 @@ palindrome_check:
     mov ebp, esp
     push ebx
 
+    mov eax, user_string
+    mov ecx, 1024
+
+    _zero_string:
+        dec ecx
+        mov [eax + ecx], BYTE 0
+
+        cmp ecx, DWORD 0
+        jne _zero_string
+
     ; Print the prompt
     mov eax, 4
     mov ebx, 1
@@ -141,7 +149,7 @@ palindrome_check:
     push user_string
     call is_palindrome_c
 
-    add esp, 4 ; remove the pushed userstring
+    add esp, 4 ; remove the pushed userstring from stack
 
     cmp eax, 1
     je _success
